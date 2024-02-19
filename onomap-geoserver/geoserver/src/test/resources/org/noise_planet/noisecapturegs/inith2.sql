@@ -1,19 +1,16 @@
-DROP TABLE IF EXISTS NOISECAPTURE_FREQ, NOISECAPTURE_POINT, NOISECAPTURE_TRACK, NOISECAPTURE_USER,
-  NOISECAPTURE_TAG, NOISECAPTURE_TRACK_TAG, NOISECAPTURE_AREA, NOISECAPTURE_PROCESS_QUEUE,
-  NOISECAPTURE_AREA_PROFILE, NOISECAPTURE_AREA_CLUSTER, NOISECAPTURE_PARTY, NOISECAPTURE_STATS_LAST_TRACKS, NOISECAPTURE_DUMP_TRACK_ENVELOPE;
+DROP TABLE IF EXISTS NOISECAPTURE_FREQ, NOISECAPTURE_POINT, NOISECAPTURE_TRACK, NOISECAPTURE_USER, NOISECAPTURE_TAG, NOISECAPTURE_TRACK_TAG, NOISECAPTURE_AREA, NOISECAPTURE_PROCESS_QUEUE, NOISECAPTURE_AREA_PROFILE, NOISECAPTURE_AREA_CLUSTER, NOISECAPTURE_PARTY, NOISECAPTURE_STATS_LAST_TRACKS, NOISECAPTURE_DUMP_TRACK_ENVELOPE;
 
- -- H2 Only
- CREATE DOMAIN IF NOT EXISTS TIMESTAMPTZ AS TIMESTAMP;
+-- H2 Only
+CREATE DOMAIN IF NOT EXISTS TIMESTAMPTZ AS TIMESTAMP;
 
 -- tables
-
 -- Table: NOISECAPTURE_USER
 CREATE TABLE NOISECAPTURE_USER (
-    PK_USER serial  NOT NULL,
-    USER_UUID char(36)  NOT NULL,
+    PK_USER serial NOT NULL,
+    USER_UUID char(36) NOT NULL,
     PSEUDO text,
-    DATE_CREATION date  NOT NULL,
-    PROFILE varchar default '',
+    DATE_CREATION date NOT NULL,
+    PROFILE varchar DEFAULT '',
     CONSTRAINT NOISECAPTURE_USER_PK PRIMARY KEY (PK_USER)
 );
 
@@ -27,23 +24,28 @@ CREATE TABLE NOISECAPTURE_PARTY (
     TITLE varchar NOT NULL,
     TAG varchar NOT NULL,
     DESCRIPTION varchar NOT NULL,
-    START_TIME TIMESTAMPTZ,
-    END_TIME TIMESTAMPTZ,
-    FILTER_TIME boolean NOT NULL default false,
-    FILTER_AREA boolean NOT NULL default false,
+    START_TIME timestamptz,
+    END_TIME timestamptz,
+    FILTER_TIME boolean NOT NULL DEFAULT FALSE,
+    FILTER_AREA boolean NOT NULL DEFAULT FALSE,
     CONSTRAINT NOISECAPTURE_PARTY_PK PRIMARY KEY (PK_PARTY)
 );
 
 COMMENT ON COLUMN NOISECAPTURE_PARTY.title IS 'Short NoiseParty title';
+
 COMMENT ON COLUMN NOISECAPTURE_PARTY.description IS 'Long description of the NoiseParty';
+
 COMMENT ON COLUMN NOISECAPTURE_PARTY.tag IS 'Tag typed by users';
+
 COMMENT ON COLUMN NOISECAPTURE_PARTY.the_geom IS 'NoiseParty location';
+
 COMMENT ON COLUMN NOISECAPTURE_PARTY.layer_name IS 'Layer name in leaflet url, must be unique';
+
 COMMENT ON COLUMN NOISECAPTURE_PARTY.filter_time IS 'If enabled, reject track with time out of start_time end_time range';
+
 COMMENT ON COLUMN NOISECAPTURE_PARTY.filter_area IS 'If enabled, reject track that does not intersects with the_geom';
 
 -- NoiseCapture party data POSTGIS only
-
 --INSERT INTO public.noisecapture_party (the_geom,layer_name,title,tag,description,start_time,end_time,filter_time,filter_area) VALUES ('SRID=4326;POLYGON ((-1.9387643337249756 46.860080718994254, -1.9387643337249756 47.393703460693416, -1.1155385971069336 47.393703460693416, -1.1155385971069336 46.860080718994254, -1.9387643337249756 46.860080718994254))'::geometry,'TEST44','Test noisecapture party','TEST44','NoiseCapture party for test purposes','2018-03-17 02:00:00+01','2030-03-26 00:59:59+01',true,true);
 --INSERT INTO public.noisecapture_party (the_geom,layer_name,title,tag,description,start_time,end_time,filter_time,filter_area) VALUES ('SRID=4326;POLYGON ((-2.668678045272827 47.68943405151367, -2.668678045272827 47.773105621338004, -2.52265286445612 47.773105621338004, -2.52265286445612 47.68943405151367, -2.668678045272827 47.68943405151367))'::geometry,'PNRGM_Elven','FestNoise - Elven','PNRGM','Le Parc Naturel Régional du Golfe du Morbihan s''intéresse à l''effet du bruit sur la biodiversité. Nous vous proposons de venir arpenter les chemins d''Elven avec nous pour mesurer le bruit autour de vous !Armé de votre smartphone Android et de l''application NoiseCapture, les mesures serviront à évaluer à quel point les espaces naturels sont impactés par la pollution sonore.','2018-06-08 03:00:00+02','2018-06-16 01:59:59+02',true,true);
 --INSERT INTO public.noisecapture_party (the_geom,layer_name,title,tag,description,start_time,end_time,filter_time,filter_area) VALUES ('POLYGON ((-2.34041 47.25688, -2.34041 47.26488, -2.33241 47.26488, -2.33241 47.25688, -2.34041 47.25688))'::geometry,'SNDIGITALWEEK','Digital Week 2017 Pornichet','SNDIGITALWEEK','<p>La Ville de Pornichet s''associe à la Saint-Nazaire Digital Week le mercredi 20 septembre, et propose de nombreuses animations gratuites et ouvertes à tous dédiées au numérique à l''hippodrome.</p><p>Venez contribuer à la création d''une carte du bruit participative, en temps réel sur les territoires de la CARENE / CAP ATLANTIQUE grâce à l''utilisation d''une application smartphone : Noise Capture.</p>',NULL,NULL,false,true);
@@ -82,30 +84,33 @@ COMMENT ON COLUMN NOISECAPTURE_PARTY.filter_area IS 'If enabled, reject track th
 --INSERT INTO public.noisecapture_party (the_geom,layer_name,title,tag,description,start_time,end_time,filter_time,filter_area) VALUES ('POLYGON ((-4.175 47.836, -4.175 47.861, -4.149 47.861, -4.149 47.836, -4.175 47.836))'::geometry,'IMS2022','Immersion Sciences 2022','IMS2022','"NoiseCapture": Capturez le bruit ! Aidez les scientifiques à cartographier l''environnement sonore.','2022-03-27 03:00:00+02','2022-04-03 01:59:59+02',true,true);
 --INSERT INTO public.noisecapture_party (the_geom,layer_name,title,tag,description,start_time,end_time,filter_time,filter_area) VALUES ('POLYGON ((14.772628777411983 40.76160691211383, 14.772628777411983 40.78173647669187, 14.81013159066223 40.78173647669187, 14.81013159066223 40.76160691211383, 14.772628777411983 40.76160691211383))'::geometry,'UNISA2022','University of Salerno 2022','UNISA','NoiseCapture Party made by the University of Salerno','2022-05-15 03:00:00+02','2022-05-19 01:59:59+02',true,true);
 --INSERT INTO public.noisecapture_party (the_geom,layer_name,title,tag,description,start_time,end_time,filter_time,filter_area) VALUES ('POLYGON ((2.3346179 48.8568894, 2.3346179 48.8723885, 2.3584574 48.8723885, 2.3584574 48.8568894, 2.3346179 48.8568894))'::geometry,'HBM2022','Les paysages sonores de Paris Centre','HBM','NoiseCapture Party sur Paris Centre (arrondissements 1, 2, 3, 4), des grands boulevards à la rue de Rivoli, des Halles au Centre Pompidou, animée par les habitants du quartier Halles Beaubourg Montorgueil','2022-07-10 03:00:00+02','2022-09-12 01:59:59+02',true,true);
- 
 -- Table: NOISECAPTURE_TRACK
 CREATE TABLE NOISECAPTURE_TRACK (
-    PK_TRACK serial  NOT NULL,
-    PK_USER int  NOT NULL REFERENCES noisecapture_user (PK_USER) ON UPDATE CASCADE ON DELETE CASCADE,
-    TRACK_UUID char(36)  NOT NULL,
-	VERSION_NUMBER int NOT NULL,
-	RECORD_UTC timestamptz NOT NULL,
-	PLEASANTNESS float,
-	DEVICE_PRODUCT text  NOT NULL,
-	DEVICE_MODEL text NOT NULL,
-	DEVICE_MANUFACTURER text NOT NULL,
-	NOISE_LEVEL float NOT NULL,
-	TIME_LENGTH float NOT NULL,
-	GAIN_CALIBRATION float NOT NULL DEFAULT 0,
-	CALIBRATION_METHOD text NOT NULL DEFAULT 'None',
-	PK_PARTY int REFERENCES noisecapture_party (PK_PARTY) ON UPDATE CASCADE ON DELETE CASCADE,
+    PK_TRACK serial NOT NULL,
+    PK_USER int NOT NULL REFERENCES noisecapture_user (PK_USER) ON UPDATE CASCADE ON DELETE CASCADE,
+    TRACK_UUID char(36) NOT NULL,
+    VERSION_NUMBER int NOT NULL,
+    RECORD_UTC timestamptz NOT NULL,
+    PLEASANTNESS float,
+    DEVICE_PRODUCT text NOT NULL,
+    DEVICE_MODEL text NOT NULL,
+    DEVICE_MANUFACTURER text NOT NULL,
+    NOISE_LEVEL float NOT NULL,
+    TIME_LENGTH float NOT NULL,
+    GAIN_CALIBRATION float NOT NULL DEFAULT 0,
+    CALIBRATION_METHOD text NOT NULL DEFAULT 'None',
+    PK_PARTY int REFERENCES noisecapture_party (PK_PARTY) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT NOISECAPTURE_TRACK_PK PRIMARY KEY (PK_TRACK)
 );
 
 COMMENT ON COLUMN NOISECAPTURE_TRACK.NOISE_LEVEL IS 'Sound level in dB(A)';
+
 COMMENT ON COLUMN NOISECAPTURE_TRACK.VERSION_NUMBER IS 'Application version identifier';
+
 COMMENT ON COLUMN NOISECAPTURE_TRACK.PLEASANTNESS IS 'PLEASANTNESS ratio, from 0 to 100';
+
 COMMENT ON COLUMN NOISECAPTURE_TRACK.GAIN_CALIBRATION IS 'Signal gain in dB, provided from user using phone calibration';
+
 COMMENT ON COLUMN NOISECAPTURE_TRACK.TIME_LENGTH IS 'Length of measurement in seconds';
 
 -- Table: NOISECAPTURE_POINT
@@ -113,40 +118,44 @@ CREATE TABLE NOISECAPTURE_POINT (
     PK_POINT serial NOT NULL,
     THE_GEOM geometry, -- POSTGIS ONLY the_geom geometry(GeometryZ, 4326),
     PK_TRACK int NOT NULL REFERENCES noisecapture_track (pk_track) ON UPDATE CASCADE ON DELETE CASCADE,
-    NOISE_LEVEL float  NOT NULL,
+    NOISE_LEVEL float NOT NULL,
     SPEED float,
-    ACCURACY float  NOT NULL,
+    ACCURACY float NOT NULL,
     ORIENTATION float,
-    TIME_DATE timestamptz  NOT NULL,
+    TIME_DATE timestamptz NOT NULL,
     TIME_LOCATION timestamptz,
     CONSTRAINT NOISECAPTURE_POINT_PK PRIMARY KEY (PK_POINT)
 );
 
 COMMENT ON COLUMN NOISECAPTURE_POINT.ORIENTATION IS 'Device movement bearing, may be null';
-COMMENT ON COLUMN NOISECAPTURE_POINT.TIME_LOCATION IS 'Time of acquisition of the localisation';
-COMMENT ON COLUMN NOISECAPTURE_POINT.TIME_DATE IS 'Time of the noise level measurement';
-COMMENT ON COLUMN NOISECAPTURE_POINT.SPEED IS 'Device speed in m/s. May be null';
-COMMENT ON COLUMN NOISECAPTURE_POINT.ACCURACY IS 'Estimated location accuracy in meter';
-COMMENT ON COLUMN NOISECAPTURE_POINT.NOISE_LEVEL IS 'Sound level in dB(A)';
 
+COMMENT ON COLUMN NOISECAPTURE_POINT.TIME_LOCATION IS 'Time of acquisition of the localisation';
+
+COMMENT ON COLUMN NOISECAPTURE_POINT.TIME_DATE IS 'Time of the noise level measurement';
+
+COMMENT ON COLUMN NOISECAPTURE_POINT.SPEED IS 'Device speed in m/s. May be null';
+
+COMMENT ON COLUMN NOISECAPTURE_POINT.ACCURACY IS 'Estimated location accuracy in meter';
+
+COMMENT ON COLUMN NOISECAPTURE_POINT.NOISE_LEVEL IS 'Sound level in dB(A)';
 
 -- Table: NOISECAPTURE_FREQ
 CREATE TABLE NOISECAPTURE_FREQ (
-    PK_POINT int  NOT NULL REFERENCES noisecapture_point (pk_point) ON DELETE CASCADE ON UPDATE CASCADE,
-    FREQUENCY smallint  NOT NULL,
-    NOISE_LEVEL float NOT NULL   ,
+    PK_POINT int NOT NULL REFERENCES noisecapture_point (pk_point) ON DELETE CASCADE ON UPDATE CASCADE,
+    FREQUENCY smallint NOT NULL,
+    NOISE_LEVEL float NOT NULL,
     CONSTRAINT NOISECAPTURE_FREQ_PK PRIMARY KEY (PK_POINT, FREQUENCY)
 );
 
 COMMENT ON COLUMN NOISECAPTURE_FREQ.FREQUENCY IS 'Frequency Hz';
+
 COMMENT ON COLUMN NOISECAPTURE_FREQ.NOISE_LEVEL IS 'Sound level in dB(A)';
 
 CREATE TABLE NOISECAPTURE_TAG (
-    PK_TAG serial  NOT NULL,
+    PK_TAG serial NOT NULL,
     TAG_NAME text NOT NULL,
     CONSTRAINT NOISECAPTURE_TAG_PK PRIMARY KEY (PK_TAG)
 );
-
 
 CREATE TABLE NOISECAPTURE_TRACK_TAG (
     PK_TRACK int NOT NULL REFERENCES NOISECAPTURE_TRACK (PK_TRACK) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -172,22 +181,26 @@ CREATE TABLE NOISECAPTURE_AREA_CLUSTER (
 );
 
 COMMENT ON COLUMN NOISECAPTURE_AREA_CLUSTER.CELL_LEVEL IS 'Hexagonal size exponent 3^n';
+
 COMMENT ON COLUMN NOISECAPTURE_AREA_CLUSTER.CELL_Q IS 'Hexagonal index Q';
+
 COMMENT ON COLUMN NOISECAPTURE_AREA_CLUSTER.CELL_R IS 'Hexagonal index R';
+
 COMMENT ON COLUMN NOISECAPTURE_AREA_CLUSTER.THE_GEOM IS 'Area shape';
+
 COMMENT ON COLUMN NOISECAPTURE_AREA_CLUSTER.MEASURE_COUNT IS 'noisecapture_point entities in this area';
 
 -- Table: NOISECAPTURE_AREA, Post-processed results, merge of measurements in a regular area
 CREATE TABLE NOISECAPTURE_AREA (
-    PK_AREA serial  NOT NULL,
+    PK_AREA serial NOT NULL,
     CELL_Q bigint NOT NULL,
     CELL_R bigint NOT NULL,
-    TZID VARCHAR(255) NOT NULL,
+    TZID varchar(255) NOT NULL,
     THE_GEOM geometry NOT NULL,
     LAEQ float NOT NULL,
     LA50 float NOT NULL,
     LDEN float NOT NULL,
-	MEAN_PLEASANTNESS float,
+    MEAN_PLEASANTNESS float,
     MEASURE_COUNT int NOT NULL,
     FIRST_MEASURE timestamptz NOT NULL,
     LAST_MEASURE timestamptz NOT NULL,
@@ -196,15 +209,18 @@ CREATE TABLE NOISECAPTURE_AREA (
 );
 
 COMMENT ON COLUMN NOISECAPTURE_AREA.CELL_Q IS 'Hexagonal index Q';
-COMMENT ON COLUMN NOISECAPTURE_AREA.CELL_R IS 'Hexagonal index R';
-COMMENT ON COLUMN NOISECAPTURE_AREA.TZID IS 'TimeZone identifier';
-COMMENT ON COLUMN NOISECAPTURE_AREA.THE_GEOM IS 'Area shape';
-COMMENT ON COLUMN NOISECAPTURE_AREA.MEASURE_COUNT IS 'noisecapture_point entities in this area';
 
+COMMENT ON COLUMN NOISECAPTURE_AREA.CELL_R IS 'Hexagonal index R';
+
+COMMENT ON COLUMN NOISECAPTURE_AREA.TZID IS 'TimeZone identifier';
+
+COMMENT ON COLUMN NOISECAPTURE_AREA.THE_GEOM IS 'Area shape';
+
+COMMENT ON COLUMN NOISECAPTURE_AREA.MEASURE_COUNT IS 'noisecapture_point entities in this area';
 
 -- Table: NOISECAPTURE_AREA, Post-processed results, merge of measurements in a regular area
 CREATE TABLE NOISECAPTURE_AREA_PROFILE (
-    PK_AREA int  NOT NULL,
+    PK_AREA int NOT NULL,
     HOUR smallint NOT NULL,
     LAEQ real NOT NULL,
     LA50 float NOT NULL,
@@ -215,18 +231,22 @@ CREATE TABLE NOISECAPTURE_AREA_PROFILE (
 );
 
 COMMENT ON COLUMN NOISECAPTURE_AREA_PROFILE.HOUR IS 'Hour of estimated value';
+
 COMMENT ON COLUMN NOISECAPTURE_AREA_PROFILE.LAEQ IS 'Laeq on this hour';
+
 COMMENT ON COLUMN NOISECAPTURE_AREA_PROFILE.LA50 IS 'LA50 on this hour';
+
 COMMENT ON COLUMN NOISECAPTURE_AREA_PROFILE.UNCERTAINTY IS 'Uncertainty 0-255';
+
 COMMENT ON COLUMN NOISECAPTURE_AREA_PROFILE.VARIABILITY IS 'Variability in dB(A)';
 
-CREATE TABLE NOISECAPTURE_DUMP_TRACK_ENVELOPE(
+CREATE TABLE NOISECAPTURE_DUMP_TRACK_ENVELOPE (
     PK_TRACK int NOT NULL REFERENCES NOISECAPTURE_TRACK (PK_TRACK) ON DELETE CASCADE ON UPDATE CASCADE,
     THE_GEOM geometry,
-    measure_count bigint);
+    measure_count bigint
+);
 
 -- Statistics cache table
-
 CREATE TABLE noisecapture_stats_last_tracks (
     pk_track integer,
     time_length double precision,
@@ -242,38 +262,36 @@ CREATE TABLE noisecapture_stats_last_tracks (
 );
 
 --- Add index
+CREATE INDEX ki_noisecapture_area_cellq ON noisecapture_area (cell_q);
 
-CREATE INDEX ki_noisecapture_area_cellq
-  ON noisecapture_area(cell_q);
-CREATE INDEX ki_noisecapture_area_cellr
-  ON noisecapture_area(cell_r);
+CREATE INDEX ki_noisecapture_area_cellr ON noisecapture_area (cell_r);
 
-CREATE INDEX fki_noisecapture_track_pk_user_fk
-  ON noisecapture_track(pk_user);
+CREATE INDEX fki_noisecapture_track_pk_user_fk ON noisecapture_track (pk_user);
 
-CREATE INDEX fki_noisecapture_point_pk_track_fk
-  ON noisecapture_point(pk_track);
+CREATE INDEX fki_noisecapture_point_pk_track_fk ON noisecapture_point (pk_track);
 
-CREATE INDEX fki_noisecapture_process_queue_pk_track_fk
-  ON noisecapture_process_queue(pk_track);
+CREATE INDEX fki_noisecapture_process_queue_pk_track_fk ON noisecapture_process_queue (pk_track);
 
-CREATE INDEX fki_noisecapture_freq_pk_point_fk
-  ON noisecapture_freq(pk_point);
+CREATE INDEX fki_noisecapture_freq_pk_point_fk ON noisecapture_freq (pk_point);
 
 -- H2GIS only queries
+CREATE SPATIAL INDEX ON NOISECAPTURE_POINT (
+    THE_GEOM
+);
 
-   CREATE SPATIAL INDEX ON NOISECAPTURE_POINT(THE_GEOM);
-   CREATE SPATIAL INDEX ON NOISECAPTURE_AREA(THE_GEOM);
-   CREATE SPATIAL INDEX ON NOISECAPTURE_AREA_CLUSTER(THE_GEOM);
+CREATE SPATIAL INDEX ON NOISECAPTURE_AREA (
+    THE_GEOM
+);
 
- ---- PostGIS only query
+CREATE SPATIAL INDEX ON NOISECAPTURE_AREA_CLUSTER (
+    THE_GEOM
+);
 
- -- CREATE INDEX ON NOISECAPTURE_POINT USING GIST(THE_GEOM);
- -- CREATE INDEX ON NOISECAPTURE_AREA USING GIST(THE_GEOM);
- -- CREATE INDEX ON NOISECAPTURE_AREA_CLUSTER USING GIST(THE_GEOM);
-
- ---- Force SRID
-
+---- PostGIS only query
+-- CREATE INDEX ON NOISECAPTURE_POINT USING GIST(THE_GEOM);
+-- CREATE INDEX ON NOISECAPTURE_AREA USING GIST(THE_GEOM);
+-- CREATE INDEX ON NOISECAPTURE_AREA_CLUSTER USING GIST(THE_GEOM);
+---- Force SRID
 -- SELECT UpdateGeometrySRID('noisecapture_dump_track_envelope','the_geom',4326);
 -- SELECT UpdateGeometrySRID('noisecapture_area','the_geom',4326);
 -- SELECT UpdateGeometrySRID('noisecapture_point','the_geom',4326);
