@@ -30,6 +30,7 @@ package org.noise_planet.noisecapture;
 import android.app.Activity;
 import android.util.Base64;
 import android.util.Base64OutputStream;
+import io.github.pixee.security.BoundedLineReader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -117,7 +118,7 @@ public class MeasurementUploadWPS {
             String line;
             BufferedReader br=new BufferedReader(new InputStreamReader(conn.getInputStream()));
             StringBuilder uuid = new StringBuilder();
-            while ((line=br.readLine()) != null) {
+            while ((line=BoundedLineReader.readLine(br, 5_000_000)) != null) {
                 uuid.append(line);
             }
             // Update Track UUID

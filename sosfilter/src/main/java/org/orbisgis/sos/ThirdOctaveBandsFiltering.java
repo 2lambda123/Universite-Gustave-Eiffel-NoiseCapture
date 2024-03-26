@@ -27,6 +27,7 @@
 
 package org.orbisgis.sos;
 
+import io.github.pixee.security.BoundedLineReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Arrays;
@@ -125,7 +126,7 @@ public class ThirdOctaveBandsFiltering {
         try {
             String line;
             FiltersParameters lastParam = null;
-            while ((line = inputStream.readLine()) != null) {
+            while ((line = BoundedLineReader.readLine(inputStream, 5_000_000)) != null) {
                 StringTokenizer splitter = new StringTokenizer(line, ",");
                 double frequency = Double.valueOf(splitter.nextToken());
                 splitter.nextToken();
